@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "juji"
+version = "0.1.0"
+description = ""
+authors = ["Eric Laugier <eric.laugier@egen.guru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.104.0"
+uvicorn = "^0.23.2"
+jinja2 = "^3.1.2"
+python-multipart = "^0.0.6"
+cryptography = "^41.0.5"
+pyjwt = "^2.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
