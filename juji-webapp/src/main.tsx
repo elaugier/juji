@@ -1,7 +1,9 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import {AuthContext, AuthProvider, IAuthContext, TAuthConfig, TRefreshTokenExpiredEvent} from "react-oauth2-code-pkce"
+
+import App from "./App.tsx";
+import {AuthProvider, TAuthConfig, TRefreshTokenExpiredEvent} from "react-oauth2-code-pkce";
 
 const authConfig: TAuthConfig = {
     clientId: 'lmdm',
@@ -12,22 +14,10 @@ const authConfig: TAuthConfig = {
     onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => window.confirm('Session expired. Refresh page to continue using the site?') && event.login(),
 }
 
-const UserInfo = (): JSX.Element => {
-    const {token, tokenData} = useContext<IAuthContext>(AuthContext)
-
-    return <>
-        <h4>Access Token</h4>
-        <pre>{token}</pre>
-        <h4>User Information from JWT</h4>
-        <pre>{JSON.stringify(tokenData, null, 2)}</pre>
-    </>
-}
-
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <AuthProvider authConfig={authConfig}>
-            <UserInfo/>
+            <App/>
         </AuthProvider>
     </React.StrictMode>,
 )
