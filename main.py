@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from auth import (
@@ -18,6 +19,20 @@ from auth import (
 )
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -90,18 +105,20 @@ def signIn(
 
 @app.post('/token')
 def exchange_for_token(
-        authorization_code: Annotated[str, Form()],
+        grant_type: Annotated[str, Form()],
+        scope: Annotated[str, Form()],
+        code: Annotated[str, Form()],
         client_id: Annotated[str, Form()],
-        redirect_url: Annotated[str, Form()],
+        redirect_uri: Annotated[str, Form()],
         code_verifier: Annotated[str, Form()]
 ):
-    if None in [authorization_code, client_id, code_verifier, redirect_url]:
+    if None in [code, client_id, code_verifier, redirect_uri]:
         err_item = ErrorResponse()
         err_item.error = "invalid request"
         json_data = jsonable_encoder(err_item)
         return JSONResponse(content=json_data, status_code=400)
 
-    if not verify_authorization_code(authorization_code, client_id, redirect_url,
+    if not verify_authorization_code(code, client_id, redirect_uri,
                                      code_verifier):
         err_item = ErrorResponse()
         err_item.error = "access denied"

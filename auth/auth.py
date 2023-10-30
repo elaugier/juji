@@ -43,7 +43,7 @@ def generate_access_token():
         "exp": time.time() + JWT_LIFE_SPAN
     }
 
-    access_token = jwt.encode(payload, private_key, algorithm='RS256').decode()
+    access_token = jwt.encode(payload, private_key, algorithm='RS256')
 
     return access_token
 
@@ -101,7 +101,7 @@ def process_redirect_url(redirect_url, authorization_code):
     # Prepare the redirect URL
     url_parts = list(urlparse.urlparse(redirect_url))
     queries = dict(urlparse.parse_qsl(url_parts[4]))
-    queries.update({"authorization_code": authorization_code})
+    queries.update({"code": authorization_code})
     url_parts[4] = urlparse.urlencode(queries)
     url = urlparse.urlunparse(url_parts)
     return url
