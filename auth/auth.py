@@ -3,9 +3,12 @@ import hashlib
 import json
 import time
 import urllib.parse as urlparse
+from datetime import datetime
 
 import jwt
 from cryptography.fernet import Fernet
+
+from database import AuthorizationCode, SessionLocal
 
 # KEY = Fernet.generate_key()
 KEY = b'YHD1m3rq3K-x6RxT1MtuGzvyLz4EWIJAEkRtBRycDHA='
@@ -59,12 +62,18 @@ def generate_authorization_code(client_id, redirect_url, code_challenge):
 
     expiration_date = time.time() + CODE_LIFE_SPAN
 
-    authorization_codes[authorization_code] = {
-        "client_id": client_id,
-        "redirect_url": redirect_url,
-        "exp": expiration_date,
-        "code_challenge": code_challenge
-    }
+    newAuthCode = AuthorizationCode(
+        authorization_code=authorization_code,
+        client_id=client_id,
+        redirect_url=redirect_url,
+        expiration_date=datetime.fromtimestamp(expiration_date),
+        code_challenge=code_challenge
+    )
+
+    session = SessionLocal()
+
+    session.add(newAuthCode)
+    session.commit()
 
     return authorization_code
 
@@ -72,27 +81,29 @@ def generate_authorization_code(client_id, redirect_url, code_challenge):
 def verify_authorization_code(authorization_code, client_id, redirect_url,
                               code_verifier):
     # f = Fernet(KEY)
-    record = authorization_codes.get(authorization_code)
+    session = SessionLocal()
+    record = session.query(AuthorizationCode).filter(AuthorizationCode.authorization_code == authorization_code).first()
     if not record:
         return False
 
-    client_id_in_record = record.get('client_id')
-    redirect_url_in_record = record.get('redirect_url')
-    exp = record.get('exp')
-    code_challenge_in_record = record.get('code_challenge')
+    client_id_in_record = record.client_id
+    redirect_url_in_record = record.redirect_url
+    exp = record.expiration_date
+    code_challenge_in_record = record.code_challenge
 
     if client_id != client_id_in_record or \
             redirect_url != redirect_url_in_record:
         return False
 
-    if exp < time.time():
+    if datetime.timestamp(exp) < time.time():
         return False
 
     code_challenge = generate_code_challenge(code_verifier)
     if code_challenge != code_challenge_in_record:
         return False
 
-    del authorization_codes[authorization_code]
+    session.delete(record)
+    session.commit()
 
     return True
 
