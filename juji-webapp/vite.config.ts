@@ -7,4 +7,7 @@ export default defineConfig({
     open: true
   },
   plugins: [react()],
+  define: {
+    global: {}
+  }
 })
