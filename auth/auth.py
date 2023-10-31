@@ -8,7 +8,7 @@ from datetime import datetime
 import jwt
 from cryptography.fernet import Fernet
 
-from database import AuthorizationCode, SessionLocal
+from models import AuthorizationCode, SessionLocal
 
 # KEY = Fernet.generate_key()
 KEY = b'YHD1m3rq3K-x6RxT1MtuGzvyLz4EWIJAEkRtBRycDHA='

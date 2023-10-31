@@ -16,6 +16,7 @@ pyjwt = "^2.8.0"
 sqlalchemy = "^2.0.22"
 mariadb = "^1.1.8"
 pydantic-settings = "^2.0.3"
+fastapi-mail = "^1.4.1"
 
 
 [build-system]

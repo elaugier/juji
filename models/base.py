@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, DateTime, String
+from sqlalchemy import create_engine, Column, Integer, DateTime, String, Enum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, declared_attr
 
-import settings
+import conf
 
-SQLALCHEMY_DATABASE_URL = settings.settings.url_db
+SQLALCHEMY_DATABASE_URL = conf.settings.url_db
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
@@ -33,6 +33,24 @@ class AuthorizationCode(Base):
     redirect_url = Column(String(1024))
     expiration_date = Column(DateTime)
     code_challenge = Column(String(1024), index=True)
+
+
+class Tag(Base):
+    label = Column(String(30), unique=True, index=True)
+    type = Column(Enum("system", "category", "user", "event"))
+    enable = Column(Boolean(), default=True)
+    start_at = Column(DateTime)
+    end_at = Column(DateTime)
+
+
+class Section(Base):
+    name = Column(String(30), unique=True, index=True)
+    shortname = Column(String(10), unique=True, index=True)
+
+
+class User(Base):
+    firstname = Column(String(255))
+    lastname = Column(String(255))
 
 
 Base.metadata.create_all(engine)

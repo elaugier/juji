@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "monday-ui-react-core": "^2.56.4",
+    "monday-ui-style": "^0.1.202",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-oauth2-code-pkce": "^1.15.2"
